@@ -9,7 +9,7 @@ pusher_client = pusher.Pusher(
   app_id=app_id,
   key=key,
   secret=secret,
-  cluster=clusters,
+  cluster=cluster,
   ssl=True
 
 )
