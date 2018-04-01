@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Chatterbox</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.1/css/bulma.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+    <section class="hero is-small is-primary is-bold">
+        <div class="hero-body">
+            <div class="container">
+                <h1 class="title">
+                    ChatterBox
+                </h1>
+                <h2 class="subtitle">
+                    Real Time Chat App
+                </h2>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="columns is-multiline is-mobile">
+            <div class="column">
+                <div class="container">
+                    <div id="cont" class="content is-small">
+                        <h3>Hello World</h3>
+                        <p>
+                            Lorem ipsum
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="column">
+                <div class="container">
+                    <div class="field is-grouped">
+                        <p class="control has-icons-left is-expanded">
+                            <input id="chat_text" class="input is-primary" type="text" placeholder="Enter your message here">
+                            <span class="icon is-small is-left">
+                                <i class="fa fa-envelope"></i>
+                            </span>
+                        </p>
+                        <p class="control">
+                            <button id="chat_but" class="button is-primary">
+                                Send
+                            </button>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="columns">
+            <div class="column">
+                <div class="container">
+                    <div id="modal_sec" class="modal is-active">
+                        <div class="modal-background"></div>
+                        <div class="modal-content">
+                            <div class="field is-grouped">
+                                <div class="control is-expanded">
+                                    <input id="username" class="input" type="text" placeholder="Enter an username to start chatting!">
+                                </div>
+                                <div class="control">
+                                    <button id="enter_but" class="button is-primary">
+                                        Enter
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <script src="https://js.pusher.com/4.1/pusher.min.js"></script>
+    <script>
+
+
+        $(function () {
+
+            let username, message;
+
+            $('#enter_but').on('click', function () {
+                username = $('#username').val();
+
+                $("#modal_sec").removeClass("is-active");
+            });
+
+            $('#chat_but').on('click', function () {
+
+                message = $('#chat_text').val();
+                $.post('/message', { 'username': username, 'message': message }, function () {
+                    $('#chat_text').val('');
+                });
+            });
+
+            // Enable pusher logging - don't include this in production
+            Pusher.logToConsole = true;
+
+            var pusher = new Pusher('ce7ac0ad03e1aa221465', {
+                cluster: 'ap2',
+                encrypted: true
+            });
+
+            var channel = pusher.subscribe('chat-channel');
+            channel.bind('chat-event', function (data) {
+                let name = data.username;
+                let message_cont = data.message;
+                let dyna_msg = ` <h3>${name}</h3>
+                        <p>
+                            ${message_cont}
+                        </p>
+                       `
+                $('#cont').append(dyna_msg);
+            });
+
+        });
+    </script>
+
+</body>
+
+</html>
